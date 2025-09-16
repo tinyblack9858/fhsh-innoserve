@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>應用程式</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        // Tailwind CSS Dark Mode Configuration
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 基本樣式 */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', 'sans-serif';
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .page, .main-content {
+            display: none;
+        }
+        .page.active, .main-content.active {
+            display: flex; /* Use flex for centering */
+        }
+        #app-container.full-screen .page.active {
+             align-items: stretch;
+             justify-content: stretch;
+        }
+         /* 側邊欄選單項目樣式 */
+        .menu-item.active-menu-item {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+        .dark .menu-item.active-menu-item {
+            background-color: #374151; /* gray-700 */
+        }
+        /* 主題切換按鈕 */
+        #theme-toggle-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        /* 響應式監控網格 */
+        .responsive-grid {
+            display: grid;
+            gap: 1rem; /* Tailwind's gap-4 */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <!-- Theme Toggle Button -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="theme-toggle-button" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-yellow-300 text-xl">
+            <i id="theme-icon" class="fas fa-sun"></i>
+        </button>
+    </div>
+
+    <div id="app-container" class="min-h-screen p-4 flex items-center justify-center">
+
+        <!-- 登入頁面 -->
+        <div id="login-page" class="page active w-full max-w-sm flex-col">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
+                <h1 class="text-2xl font-bold mb-2">應用程式名稱</h1>
+                <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">登入</h2>
+                <div class="space-y-4">
+                    <input type="text" placeholder="使用者名稱" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input type="password" placeholder="密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                </div>
+                <div class="text-right mt-3">
+                    <a href="#" onclick="showPage('signup-page')" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">註冊帳號 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <button onclick="showPage('select-count-page')" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">確認</button>
+            </div>
+        </div>
+
+        <!-- 註冊頁面 -->
+        <div id="signup-page" class="page w-full max-w-sm flex-col">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
+                <h1 class="text-2xl font-bold mb-2">應用程式名稱</h1>
+                <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">註冊</h2>
+                <div class="space-y-4">
+                    <input type="text" placeholder="使用者名稱" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input type="password" placeholder="密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input type="password" placeholder="再次輸入密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                </div>
+                <button onclick="showPage('login-page')" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">確認</button>
+                 <a href="#" onclick="showPage('login-page')" class="block mt-4 text-sm text-gray-500 hover:underline">已經有帳號了？返回登入</a>
+            </div>
+        </div>
+
+        <!-- 輸入電腦數量頁面 -->
+        <div id="select-count-page" class="page w-full max-w-sm flex-col">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
+                <h2 class="text-2xl font-bold mb-6">設定監控數量</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">請輸入您想要監控的電腦總數。</p>
+                <input type="number" id="computer-count-input" min="1" placeholder="例如：8" class="w-full text-center text-lg px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                <button onclick="setupDashboard()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
+            </div>
+        </div>
+        
+        <!-- 主監控容器 -->
+        <div id="monitor-container" class="page w-full h-full flex-col">
+            <div class="w-full h-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex overflow-hidden">
+                <!-- 側邊欄 -->
+                <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                            <i class="fas fa-user text-2xl text-gray-500"></i>
+                        </div>
+                        <div>
+                            <p id="sidebar-username" class="font-bold">使用者名稱</p>
+                        </div>
+                    </div>
+                    <nav id="main-menu" class="space-y-2">
+                        <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span>
+                        </a>
+                        <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span>
+                        </a>
+                        <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span>
+                        </a>
+                        <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span>
+                        </a>
+                    </nav>
+                    <div class="mt-auto">
+                        <a href="#" onclick="logout()" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3 font-semibold">登出</span>
+                        </a>
+                    </div>
+                </aside>
+                
+                <!-- 主要內容區域 -->
+                <main id="main-content-area" class="flex-1 overflow-y-auto flex flex-col">
+                    <!-- 監控內容 (預設) -->
+                    <div id="monitor-content" class="main-content active flex-col p-8">
+                        <h2 class="text-3xl font-bold mb-6">監控儀表板</h2>
+                        <div id="computer-grid" class="flex-1 responsive-grid pb-4">
+                            <!-- 電腦畫面方格將動態生成於此 -->
+                        </div>
+                        <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <button id="select-all-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition">全選</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 白名單內容 -->
+                    <div id="whitelist-content" class="main-content flex-col items-center p-8">
+                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">白名單設定</h2>
+                         <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
+                            <textarea placeholder="請輸入可存取的URL...&#10;每行一個。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea>
+                         </div>
+                         <div class="w-full max-w-3xl text-right mt-6">
+                            <button class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button>
+                        </div>
+                    </div>
+
+                    <!-- 警示頁面內容 -->
+                    <div id="redirect-content" class="main-content flex-col items-center p-8">
+                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">警示頁面設定</h2>
+                         <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
+                            <label for="redirect-url" class="block font-semibold mb-2 text-gray-700 dark:text-gray-300">指定重新導向URL:</label>
+                            <input type="url" id="redirect-url" placeholder="例如：https://example.com/warning" class="w-full p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">當學生訪問未授權的網站時，他們的螢幕將會被導向至此URL。</p>
+                         </div>
+                         <div class="w-full max-w-3xl text-right mt-6">
+                            <button id="save-redirect-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button>
+                        </div>
+                    </div>
+
+                    <!-- 設定內容 -->
+                    <div id="settings-content" class="main-content flex-col items-center justify-center p-8">
+                        <div class="w-full max-w-2xl">
+                             <h2 class="text-3xl font-bold mb-8">帳號設定</h2>
+                            <div class="space-y-8">
+                                <div class="flex items-center space-x-6">
+                                     <div id="settings-avatar-display" class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center ring-4 ring-gray-300 dark:ring-gray-600 overflow-hidden">
+                                        <i class="fas fa-user text-4xl text-gray-500"></i>
+                                    </div>
+                                    <label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                                        <input type="file" id="avatar-upload-input" class="hidden" accept="image/*">
+                                        <i class="fas fa-upload mr-2"></i>上傳圖片
+                                    </label>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                                    <label for="settings-username" class="font-semibold">帳號名稱:</label>
+                                    <input type="text" id="settings-username" value="使用者名稱" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                                </div>
+                                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                                    <label for="settings-new-password" class="font-semibold">新密碼:</label>
+                                    <input type="password" id="settings-new-password" placeholder="輸入新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+                                    <label for="settings-confirm-password" class="font-semibold">確認密碼:</label>
+                                     <input type="password" id="settings-confirm-password" placeholder="確認新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                                </div>
+                                
+                                <hr class="dark:border-gray-600">
+
+                                <div class="flex justify-between items-center flex-wrap gap-4">
+                                     <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">刪除帳號</button>
+                                     <div class="flex gap-4">
+                                        <button class="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition" onclick="switchContent('monitor-content')">返回</button>
+                                        <button id="save-settings-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="fixed bottom-10 right-10 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 translate-y-4" style="transition: opacity 0.3s ease, transform 0.3s ease;">
+        設定已儲存！
+    </div>
+
+    <script>
+        const appContainer = document.getElementById('app-container');
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            if (pageId === 'monitor-container') {
+                appContainer.classList.add('full-screen');
+                appContainer.classList.remove('items-center', 'justify-center');
+            } else {
+                appContainer.classList.remove('full-screen');
+                appContainer.classList.add('items-center', 'justify-center');
+            }
+        }
+        
+        function switchContent(contentId) {
+            document.querySelectorAll('.main-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+
+            const targetContent = document.getElementById(contentId);
+            targetContent.classList.add('active');
+            targetContent.style.display = 'flex'; // Use flex for consistency
+
+            document.querySelectorAll('#main-menu .menu-item').forEach(item => {
+                item.classList.remove('active-menu-item');
+            });
+            
+            const activeMenuItem = document.querySelector(`#main-menu .menu-item[data-content="${contentId}"]`);
+            if (activeMenuItem) {
+                activeMenuItem.classList.add('active-menu-item');
+            }
+        }
+        
+        function setupDashboard() {
+            const countInput = document.getElementById('computer-count-input');
+            const count = parseInt(countInput.value, 10);
+            if (isNaN(count) || count < 1) {
+                alert('請輸入有效的電腦數量！');
+                return;
+            }
+            generateComputerGrid(count);
+            showPage('monitor-container');
+            switchContent('monitor-content');
+        }
+        
+        function toggleComputerSelection(computerElement) {
+            const isSelected = computerElement.dataset.selected === 'true';
+            const selectAllBtn = document.getElementById('select-all-btn');
+
+            if (isSelected) {
+                computerElement.dataset.selected = 'false';
+                computerElement.classList.remove('ring-green-400', 'dark:ring-green-500');
+                computerElement.classList.add('ring-red-400', 'dark:ring-red-600');
+            } else {
+                computerElement.dataset.selected = 'true';
+                computerElement.classList.remove('ring-red-400', 'dark:ring-red-600');
+                computerElement.classList.add('ring-green-400', 'dark:ring-green-500');
+            }
+
+            // After toggling one, check if all are selected to update the button text
+            const computerBoxes = document.querySelectorAll('#computer-grid > div');
+            const allSelected = Array.from(computerBoxes).every(box => box.dataset.selected === 'true');
+            selectAllBtn.textContent = allSelected ? '取消全選' : '全選';
+        }
+
+        function generateComputerGrid(count) {
+            const grid = document.getElementById('computer-grid');
+            grid.innerHTML = ''; // Clear previous grid
+            for (let i = 1; i <= count; i++) {
+                const item = document.createElement('div');
+                // Add default state: red border, cursor pointer
+                item.className = 'bg-gray-200 dark:bg-gray-900/50 rounded-lg flex flex-col items-center justify-center aspect-video p-4 cursor-pointer ring-2 ring-red-400 dark:ring-red-600 transition-all';
+                item.dataset.selected = 'false'; // Custom data attribute to track state
+                item.innerHTML = `
+                    <i class="fas fa-desktop text-4xl text-gray-400 dark:text-gray-500 mb-2"></i>
+                    <p class="font-semibold text-gray-700 dark:text-gray-300">電腦 ${i}</p>
+                `;
+                // Add click listener
+                item.addEventListener('click', () => toggleComputerSelection(item));
+                grid.appendChild(item);
+            }
+            // Reset button text
+            document.getElementById('select-all-btn').textContent = '全選';
+        }
+
+        function logout() {
+            // Reset state if needed
+            document.getElementById('computer-count-input').value = '';
+            showPage('login-page');
+        }
+
+        document.querySelectorAll('#main-menu .menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const contentId = e.currentTarget.dataset.content;
+                if (contentId) {
+                    switchContent(contentId);
+                }
+            });
+        });
+        
+        document.getElementById('select-all-btn').addEventListener('click', () => {
+            const selectAllBtn = document.getElementById('select-all-btn');
+            const computerBoxes = document.querySelectorAll('#computer-grid > div');
+            const isTogglingToSelectAll = selectAllBtn.textContent === '全選';
+
+            computerBoxes.forEach(box => {
+                if (isTogglingToSelectAll) {
+                    box.dataset.selected = 'true';
+                    box.classList.remove('ring-red-400', 'dark:ring-red-600');
+                    box.classList.add('ring-green-400', 'dark:ring-green-500');
+                } else {
+                    box.dataset.selected = 'false';
+                    box.classList.remove('ring-green-400', 'dark:ring-green-500');
+                    box.classList.add('ring-red-400', 'dark:ring-red-600');
+                }
+            });
+            selectAllBtn.textContent = isTogglingToSelectAll ? '取消全選' : '全選';
+        });
+
+        // --- 深色/淺色模式切換邏輯 ---
+        const themeToggleButton = document.getElementById('theme-toggle-button');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlEl = document.documentElement;
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        }
+        
+        // On load, check localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlEl.classList.toggle('dark', savedTheme === 'dark');
+        updateThemeIcon(savedTheme);
+
+        themeToggleButton.addEventListener('click', () => {
+            const isDark = htmlEl.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        // --- 設定儲存與頭像邏輯 ---
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        const notificationToast = document.getElementById('notification-toast');
+        const sidebarUsername = document.getElementById('sidebar-username');
+        const settingsUsernameInput = document.getElementById('settings-username');
+        const avatarUploadInput = document.getElementById('avatar-upload-input');
+        const settingsAvatarDisplay = document.getElementById('settings-avatar-display');
+        const sidebarAvatarDisplay = document.getElementById('sidebar-avatar-display');
+
+        function showNotification(message, isError = false) {
+            notificationToast.textContent = message;
+            notificationToast.classList.remove('bg-green-500', 'bg-red-500');
+            notificationToast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+            
+            notificationToast.classList.remove('opacity-0', 'translate-y-4');
+            notificationToast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                notificationToast.classList.remove('opacity-100', 'translate-y-0');
+                notificationToast.classList.add('opacity-0', 'translate-y-4');
+            }, 3000); // 3秒後隱藏
+        }
+
+        saveSettingsBtn.addEventListener('click', () => {
+            const username = settingsUsernameInput.value;
+            const newPassword = document.getElementById('settings-new-password').value;
+            const confirmPassword = document.getElementById('settings-confirm-password').value;
+
+            if (!username.trim()) {
+                showNotification('使用者名稱不能為空！', true);
+                return;
+            }
+
+            if (newPassword && newPassword !== confirmPassword) {
+                showNotification('新密碼與確認密碼不相符！', true);
+                return;
+            }
+            
+            console.log('儲存設定:', { username, newPassword });
+            
+            // 同步更新側邊欄的使用者名稱
+            sidebarUsername.textContent = username;
+            
+            showNotification('設定已成功儲存！');
+
+            // 儲存後選擇性地清除密碼欄位
+            document.getElementById('settings-new-password').value = '';
+            document.getElementById('settings-confirm-password').value = '';
+        });
+        
+        avatarUploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageUrl = e.target.result;
+                    const imgHTML = `<img src="${imageUrl}" class="w-full h-full object-cover">`;
+                    
+                    // 同步更新設定頁面和側邊欄的頭像
+                    settingsAvatarDisplay.innerHTML = imgHTML;
+                    sidebarAvatarDisplay.innerHTML = imgHTML;
+                };
+                reader.readAsDataURL(file);
+            } 
+        });
+
+        // --- 警示頁面儲存邏輯 ---
+        const saveRedirectBtn = document.getElementById('save-redirect-btn');
+
+        saveRedirectBtn.addEventListener('click', () => {
+            const redirectUrl = document.getElementById('redirect-url').value;
+            // 簡易的URL驗證
+            try {
+                new URL(redirectUrl);
+                console.log('儲存警示頁面URL:', redirectUrl);
+                showNotification('警示頁面URL已儲存！');
+            } catch (_) {
+                showNotification('請輸入有效的URL！', true);
+            }
+        });
+
+
+        // Initialize first page view
+        showPage('login-page');
+    </script>
+</body>
+</html>
+
