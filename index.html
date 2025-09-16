@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -66,7 +67,6 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
-    <!-- Theme Toggle Button -->
     <div class="fixed top-4 right-4 z-50">
         <button id="theme-toggle-button" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-yellow-300 text-xl">
             <i id="theme-icon" class="fas fa-sun"></i>
@@ -75,7 +75,6 @@
 
     <div id="app-container" class="min-h-screen p-4 flex items-center justify-center">
 
-        <!-- 登入頁面 -->
         <div id="login-page" class="page active w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
                 <h1 class="text-2xl font-bold mb-2">應用程式名稱</h1>
@@ -91,7 +90,6 @@
             </div>
         </div>
 
-        <!-- 註冊頁面 -->
         <div id="signup-page" class="page w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
                 <h1 class="text-2xl font-bold mb-2">應用程式名稱</h1>
@@ -106,7 +104,6 @@
             </div>
         </div>
 
-        <!-- 輸入電腦數量頁面 -->
         <div id="select-count-page" class="page w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
                 <h2 class="text-2xl font-bold mb-6">設定監控數量</h2>
@@ -116,10 +113,8 @@
             </div>
         </div>
         
-        <!-- 主監控容器 -->
         <div id="monitor-container" class="page w-full h-full flex-col">
             <div class="w-full h-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex overflow-hidden">
-                <!-- 側邊欄 -->
                 <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col">
                     <div class="flex items-center space-x-4 mb-8">
                         <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
@@ -150,31 +145,26 @@
                     </div>
                 </aside>
                 
-                <!-- 主要內容區域 -->
                 <main id="main-content-area" class="flex-1 overflow-y-auto flex flex-col">
-                    <!-- 監控內容 (預設) -->
                     <div id="monitor-content" class="main-content active flex-col p-8">
                         <h2 class="text-3xl font-bold mb-6">監控儀表板</h2>
                         <div id="computer-grid" class="flex-1 responsive-grid pb-4">
-                            <!-- 電腦畫面方格將動態生成於此 -->
-                        </div>
+                            </div>
                         <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
                             <button id="select-all-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition">全選</button>
                         </div>
                     </div>
                     
-                    <!-- 白名單內容 -->
                     <div id="whitelist-content" class="main-content flex-col items-center p-8">
                          <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">白名單設定</h2>
                          <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
                             <textarea placeholder="請輸入可存取的URL...&#10;每行一個。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea>
                          </div>
                          <div class="w-full max-w-3xl text-right mt-6">
-                            <button class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button>
+                            <button id="save-whitelist-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button>
                         </div>
                     </div>
 
-                    <!-- 警示頁面內容 -->
                     <div id="redirect-content" class="main-content flex-col items-center p-8">
                          <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">警示頁面設定</h2>
                          <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
@@ -187,7 +177,6 @@
                         </div>
                     </div>
 
-                    <!-- 設定內容 -->
                     <div id="settings-content" class="main-content flex-col items-center justify-center p-8">
                         <div class="w-full max-w-2xl">
                              <h2 class="text-3xl font-bold mb-8">帳號設定</h2>
@@ -232,7 +221,6 @@
         </div>
     </div>
 
-    <!-- Notification Toast -->
     <div id="notification-toast" class="fixed bottom-10 right-10 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 translate-y-4" style="transition: opacity 0.3s ease, transform 0.3s ease;">
         設定已儲存！
     </div>
@@ -465,12 +453,37 @@
             const redirectUrl = document.getElementById('redirect-url').value;
             // 簡易的URL驗證
             try {
+                if (redirectUrl.trim() === '') {
+                    console.log('警示頁面URL已清空。');
+                    showNotification('警示頁面URL已儲存！');
+                    return;
+                }
                 new URL(redirectUrl);
                 console.log('儲存警示頁面URL:', redirectUrl);
                 showNotification('警示頁面URL已儲存！');
             } catch (_) {
-                showNotification('請輸入有效的URL！', true);
+                showNotification('無效的URL！請輸入完整的網址 (例如：https://example.com)', true);
             }
+        });
+        
+        // --- 白名單儲存邏輯 ---
+        const saveWhitelistBtn = document.getElementById('save-whitelist-btn');
+
+        saveWhitelistBtn.addEventListener('click', () => {
+            const whitelistTextarea = document.querySelector('#whitelist-content textarea');
+            const urls = whitelistTextarea.value.split('\n').filter(line => line.trim() !== '');
+
+            for (const url of urls) {
+                try {
+                    new URL(url);
+                } catch (_) {
+                    showNotification('無效的URL！請輸入完整的網址 (例如：https://example.com)', true);
+                    return;
+                }
+            }
+
+            console.log('儲存白名單:', urls);
+            showNotification('白名單已成功儲存！');
         });
 
 
@@ -479,4 +492,3 @@
     </script>
 </body>
 </html>
-
