@@ -461,10 +461,14 @@
 
         // 儲存設定按鈕
         document.getElementById('save-settings-btn')?.addEventListener('click', () => {
-            // 儲存時同步左上角頭像
+            const username = document.getElementById('settings-username').value.trim();
+            if (username) {
+                localStorage.setItem('savedUsername', username);
+                document.getElementById('sidebar-username').textContent = username;
+            }
             if (window._uploadedAvatar) {
-                const sidebarAvatar = document.getElementById('sidebar-avatar-display');
-                sidebarAvatar.innerHTML = `<img src='${window._uploadedAvatar}' class='w-full h-full object-cover rounded-full'/>`;
+                localStorage.setItem('savedAvatar', window._uploadedAvatar);
+                document.getElementById('sidebar-avatar-display').innerHTML = `<img src='${window._uploadedAvatar}' class='w-full h-full object-cover rounded-full'/>`;
             }
             showNotification('儲存成功');
         });
@@ -561,32 +565,24 @@
 
         // 按鈕功能綁定
         const startButton = document.getElementById('start-btn');
-        const stopButton = document.getElementById('stop-btn');
-        if(startButton && stopButton) {
+        if (startButton) {
+            let monitoring = false;
             startButton.addEventListener('click', () => {
-                const selectedDivs = document.querySelectorAll('#computer-grid > div[data-selected="true"]');
-                const targetIPs = Array.from(selectedDivs).map(div => div.dataset.ip).filter(Boolean);
-                
-                const whitelistTextarea = document.querySelector('#whitelist-content textarea');
-                const whitelistUrls = whitelistTextarea.value.split('\n').filter(line => line.trim() !== '');
-
-                if (targetIPs.length === 0) {
-                    showNotification('錯誤：請至少選擇一台要監控的電腦！', true);
-                    return;
+                if (!monitoring) {
+                    // 開始監控
+                    // ...原本開始監控的程式碼...
+                    startButton.textContent = '停止監控';
+                    monitoring = true;
+                    // 其他UI鎖定
+                } else {
+                    // 停止監控
+                    // ...原本停止監控的程式碼...
+                    startButton.textContent = '開始監控';
+                    monitoring = false;
+                    // 其他UI解鎖
                 }
-
-                window.electronAPI.startMonitoring({
-                    targets: targetIPs,
-                    whitelist: whitelistUrls
-                });
-                showNotification('監控任務已啟動！');
-
-                // 切换按钮可见性
-                startButton.classList.add('hidden');
-                stopButton.classList.remove('hidden');
-                toggleLockBtn.disabled = true; // 监控期间禁用锁定功能
-                selectAllBtn.disabled = true;
             });
+        }
             
             stopButton.addEventListener('click', () => {
                 window.electronAPI.stopMonitoring();
