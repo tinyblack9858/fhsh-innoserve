@@ -150,30 +150,32 @@
         <div id="monitor-container" class="page w-full h-full flex-col">
             <div class="w-full h-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex overflow-hidden">
                 <!-- 側邊欄 -->
-                <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col">
-                    <div class="flex items-center space-x-4 mb-8">
-                        <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
-                            <i class="fas fa-user text-2xl text-gray-500"></i>
+                <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col relative">
+                    <div>
+                        <div class="flex items-center space-x-4 mb-8">
+                            <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                                <i class="fas fa-user text-2xl text-gray-500"></i>
+                            </div>
+                            <div>
+                                <p id="sidebar-username" class="font-bold">使用者名稱</p>
+                            </div>
                         </div>
-                        <div>
-                            <p id="sidebar-username" class="font-bold">使用者名稱</p>
-                        </div>
+                        <nav id="main-menu" class="space-y-2">
+                            <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300">
+                                <i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span>
+                            </a>
+                            <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span>
+                            </a>
+                            <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span>
+                            </a>
+                            <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                <i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span>
+                            </a>
+                        </nav>
                     </div>
-                    <nav id="main-menu" class="space-y-2">
-                        <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300">
-                            <i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span>
-                        </a>
-                        <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
-                            <i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span>
-                        </a>
-                        <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
-                            <i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span>
-                        </a>
-                        <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
-                            <i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span>
-                        </a>
-                    </nav>
-                    <div class="mt-auto">
+                    <div class="absolute bottom-6 inset-x-6">
                         <a href="#" onclick="logout()" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">
                             <i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3 font-semibold">登出</span>
                         </a>
@@ -181,7 +183,7 @@
                 </aside>
                 
                 <!-- 主要內容區域 -->
-                <main id="main-content-area" class="flex-1 overflow-y-auto flex flex-col">
+                <main id="main-content-area" class="flex-1 overflow-y-auto flex flex-col min-h-0">
                     <!-- 監控內容 (預設) -->
                     <div id="monitor-content" class="main-content active flex-col p-8">
                         <h2 class="text-3xl font-bold mb-6">監控儀表板</h2>
@@ -459,6 +461,7 @@
         function toggleComputerSelection(computerElement) {
             const isSelected = computerElement.dataset.selected === 'true';
             const selectAllBtn = document.getElementById('select-all-btn');
+            const toggleLockBtn = document.getElementById('toggle-lock-btn');
 
             if (isSelected) {
                 computerElement.dataset.selected = 'false';
@@ -472,7 +475,10 @@
 
             const computerBoxes = document.querySelectorAll('#computer-grid > div');
             const allSelected = Array.from(computerBoxes).every(box => box.dataset.selected === 'true');
+            const anySelected = Array.from(computerBoxes).some(box => box.dataset.selected === 'true');
+            
             selectAllBtn.textContent = allSelected ? '取消全選' : '全選';
+            toggleLockBtn.disabled = !anySelected;
         }
 
         function generateComputerGrid(count, ipAddresses) {
@@ -518,6 +524,7 @@
             const selectAllBtn = document.getElementById('select-all-btn');
             const computerBoxes = document.querySelectorAll('#computer-grid > div');
             const isTogglingToSelectAll = selectAllBtn.textContent === '全選';
+            const toggleLockBtn = document.getElementById('toggle-lock-btn');
 
             computerBoxes.forEach(box => {
                 box.dataset.selected = isTogglingToSelectAll ? 'true' : 'false';
@@ -527,6 +534,7 @@
                 box.classList.toggle('dark:ring-red-600', !isTogglingToSelectAll);
             });
             selectAllBtn.textContent = isTogglingToSelectAll ? '取消全選' : '全選';
+            toggleLockBtn.disabled = !isTogglingToSelectAll;
         });
 
         // --- 深色/淺色模式切換邏輯 ---
@@ -628,14 +636,33 @@
             const toggleLockBtn = document.getElementById('toggle-lock-btn');
             const selectAllBtn = document.getElementById('select-all-btn');
 
+            // 新增：一個函式來統一控制選取功能的啟用/禁用
+            function setSelectionLock(isLocked) {
+                const computerBoxes = document.querySelectorAll('#computer-grid > div');
+                computerBoxes.forEach(box => {
+                    box.style.pointerEvents = isLocked ? 'none' : 'auto';
+                    if (isLocked) {
+                        box.classList.add('opacity-75');
+                    } else {
+                        box.classList.remove('opacity-75');
+                    }
+                });
+                selectAllBtn.disabled = isLocked;
+            }
+
+            // 初始狀態設定
+            startButton.disabled = true;
+            toggleLockBtn.disabled = true;
+
             startButton.onclick = () => {
                 const computerBoxes = document.querySelectorAll('#computer-grid > div');
                 const selectedComputers = Array.from(computerBoxes)
                     .filter(box => box.dataset.selected === 'true')
                     .map(box => box.dataset.ip);
                 
+                // 雖然按鈕是disabled，但還是做個保險
                 if (selectedComputers.length === 0) {
-                    showNotification('請至少選取一台電腦來開始監控！', true);
+                    showNotification('請先鎖定要監控的電腦！', true);
                     return;
                 }
 
@@ -654,15 +681,12 @@
 
                 startButton.classList.add('hidden');
                 stopButton.classList.remove('hidden');
-                toggleLockBtn.disabled = false; // 【修正】監控開始後，應該要可以鎖定
-                selectAllBtn.disabled = true; // 監控時禁止再調整選項
+                toggleLockBtn.disabled = true; // 監控中，禁止解除鎖定
 
-                // 更新UI為監控中狀態
-                 computerBoxes.forEach(box => {
+                computerBoxes.forEach(box => {
                     if (box.dataset.selected === 'true') {
-                       box.classList.remove('ring-green-400', 'dark:ring-green-500', 'ring-red-400', 'dark:ring-red-600');
+                       box.classList.remove('ring-green-400', 'dark:ring-green-500');
                        box.classList.add('ring-yellow-400', 'dark:ring-yellow-500', 'animate-pulse-yellow');
-                       box.style.pointerEvents = 'none'; // 監控中禁止點擊
                     }
                 });
             };
@@ -674,41 +698,39 @@
 
                 stopButton.classList.add('hidden');
                 startButton.classList.remove('hidden');
-                selectAllBtn.disabled = false;
-
-                // 如果是鎖定狀態，要先自動解除
-                if (toggleLockBtn.dataset.state === 'locked') {
-                    toggleLockBtn.click(); 
-                }
-                toggleLockBtn.disabled = true; // 停止後禁用鎖定
+                toggleLockBtn.disabled = false; // 停止後，允許解除鎖定
 
                 document.querySelectorAll('#computer-grid > div').forEach(box => {
-                    const isSelected = box.dataset.selected === 'true';
-                    box.style.pointerEvents = 'auto'; // 恢復點擊
-                    box.classList.remove('ring-yellow-400', 'dark:ring-yellow-500', 'animate-pulse-yellow');
-                    box.classList.toggle('ring-green-400', isSelected);
-                    box.classList.toggle('dark:ring-green-500', isSelected);
-                    box.classList.toggle('ring-red-400', !isSelected);
-                    box.classList.toggle('dark:ring-red-600', !isSelected);
+                    if (box.dataset.selected === 'true') {
+                        box.classList.remove('ring-yellow-400', 'dark:ring-yellow-500', 'animate-pulse-yellow');
+                        box.classList.add('ring-green-400', 'dark:ring-green-500');
+                    }
                 });
             };
             
-            toggleLockBtn.disabled = true; // 初始禁用
-
             toggleLockBtn.onclick = () => {
                 const currentState = toggleLockBtn.dataset.state;
 
                 if (currentState === 'unlocked') {
+                    // --- 執行鎖定 ---
                     toggleLockBtn.dataset.state = 'locked';
                     toggleLockBtn.classList.replace('bg-green-600', 'bg-red-600');
                     toggleLockBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
                     toggleLockBtn.innerHTML = `<i class="fas fa-unlock mr-2"></i>解除鎖定`;
+                    
+                    setSelectionLock(true); // 鎖定選取功能
+                    startButton.disabled = false; // 啟用開始監控按鈕
                     showNotification('電腦已鎖定');
+
                 } else {
+                    // --- 執行解除鎖定 ---
                     toggleLockBtn.dataset.state = 'unlocked';
                     toggleLockBtn.classList.replace('bg-red-600', 'bg-green-600');
                     toggleLockBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
                     toggleLockBtn.innerHTML = `<i class="fas fa-lock mr-2"></i>鎖定`;
+                    
+                    setSelectionLock(false); // 解除鎖定選取功能
+                    startButton.disabled = true; // 禁用開始監控按鈕
                     showNotification('電腦已解除鎖定');
                 }
             };
