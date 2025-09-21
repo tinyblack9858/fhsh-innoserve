@@ -52,7 +52,7 @@
                 <h1 class="text-2xl font-bold mb-2">教師網路監控系统</h1>
                 <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">登入</h2>
                 <div class="space-y-4">
-                    <input id="login-email" type="email" placeholder="Email / 電子邮件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input id="login-email" type="email" placeholder="Email / 電子郵件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                     <input id="login-password" type="password" placeholder="密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                 </div>
                 <div class="text-right mt-3"><a href="#" onclick="showPage('signup-page')" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">註冊帳號 <i class="fas fa-arrow-right"></i></a></div>
@@ -65,9 +65,9 @@
                 <h1 class="text-2xl font-bold mb-2">教師網路監控系统</h1>
                 <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">註冊</h2>
                 <div class="space-y-4">
-                    <input id="signup-email" type="email" placeholder="Email / 電子邮件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
-                    <input id="signup-password" type="password" placeholder="密码" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
-                    <input id="signup-confirm-password" type="password" placeholder="再次输入密码" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input id="signup-email" type="email" placeholder="Email / 電子郵件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input id="signup-password" type="password" placeholder="密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input id="signup-confirm-password" type="password" placeholder="再次输入密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                 </div>
                 <button onclick="handleSignup()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">確認</button>
                 <a href="#" onclick="showPage('login-page')" class="block mt-4 text-sm text-gray-500 hover:underline">已經有帳號了？返回登入</a>
@@ -77,7 +77,7 @@
         <div id="select-count-page" class="page w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
                 <h2 class="text-2xl font-bold mb-6">設定監控數量</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">请输入您想要監控的電腦總數。</p>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">請输入您想要監控的電腦總數。</p>
                 <input type="number" id="computer-count-input" min="1" placeholder="例如：8" class="w-full text-center text-lg px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                 <button onclick="showIpInputPage()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
             </div>
@@ -96,7 +96,7 @@
             <div class="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-lg">
                 <h1 class="text-3xl font-bold mb-4">教師網路監控系統</h1>
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">正在設定儀表板，请稍候...</p>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">正在設定儀表板，請稍候...</p>
             </div>
         </div>
         <!-- 主监控容器 -->
@@ -130,7 +130,7 @@
                     </div>
                     <div id="whitelist-content" class="main-content flex-col items-center p-8">
                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">白名單設定</h2>
-                        <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg"><textarea id="whitelist-textarea" placeholder="请输入可存取的URL...&#10;每行一个。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea></div>
+                        <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg"><textarea id="whitelist-textarea" placeholder="請輸入可存取的URL...&#10;每行一個。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea></div>
                         <div class="w-full max-w-3xl text-right mt-6"><button id="save-whitelist-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button></div>
                     </div>
                     <div id="redirect-content" class="main-content flex-col items-center p-8">
@@ -148,8 +148,8 @@
                             <div class="space-y-8">
                                 <div class="flex items-center space-x-6"><div id="settings-avatar-display" class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center ring-4 ring-gray-300 dark:ring-gray-600 overflow-hidden"><i class="fas fa-user text-4xl text-gray-500"></i></div><label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition"><input type="file" id="avatar-upload-input" class="hidden" accept="image/*"><i class="fas fa-upload mr-2"></i>上傳圖片</label></div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-username" class="font-semibold">帳號名稱:</label><input type="text" id="settings-username" value="使用者名稱" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-new-password" class="font-semibold">新密碼:</label><input type="password" id="settings-new-password" placeholder="输入新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-confirm-password" class="font-semibold">確認密碼:</label><input type="password" id="settings-confirm-password" placeholder="确认新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-new-password" class="font-semibold">新密碼:</label><input type="password" id="settings-new-password" placeholder="輸入新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-confirm-password" class="font-semibold">確認密碼:</label><input type="password" id="settings-confirm-password" placeholder="确認新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
                                 <hr class="dark:border-gray-600">
                                 <div class="flex justify-between items-center flex-wrap gap-4">
                                     <button id="delete-account-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">刪除帳號</button>
@@ -201,9 +201,9 @@
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value.trim();
             const confirmPassword = document.getElementById('signup-confirm-password').value.trim();
-            if (!email || !password || !confirmPassword) return showNotification('所有欄位皆为必填！', true);
-            if (!isValidEmail(email)) return showNotification('请输入有效的電子郵件格式！', true);
-            if (password !== confirmPassword) return showNotification('两次输入的密碼不一致！', true);
+            if (!email || !password || !confirmPassword) return showNotification('所有欄位皆為必填！', true);
+            if (!isValidEmail(email)) return showNotification('請輸入有效的電子郵件格式！', true);
+            if (password !== confirmPassword) return showNotification('兩次輸入的密碼不一致！', true);
             const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
             if (users.some(user => user.email === email)) return showNotification('此電子郵件已被註冊！', true);
             users.push({ email, password, username: email.split('@')[0] }); 
@@ -233,7 +233,7 @@
             const ipInputsContainer = document.getElementById('ip-inputs-container');
             ipInputsContainer.innerHTML = '';
             for (let i = 1; i <= count; i++) {
-                ipInputsContainer.innerHTML += `<div class="flex items-center gap-4"><label for="ip-input-${i}" class="font-semibold text-gray-700 dark:text-gray-300 w-24 text-right">电脑 ${i}:</label><input type="text" id="ip-input-${i}" placeholder="例如：192.168.1.10${i - 1}" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>`;
+                ipInputsContainer.innerHTML += `<div class="flex items-center gap-4"><label for="ip-input-${i}" class="font-semibold text-gray-700 dark:text-gray-300 w-24 text-right">電腦 ${i}:</label><input type="text" id="ip-input-${i}" placeholder="例如：192.168.1.10${i - 1}" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>`;
             }
             showPage('ip-input-page');
         }
@@ -362,7 +362,7 @@
             } else { showNotification('找不到使用者資料，無法儲存！', true); }
         });
         document.getElementById('delete-account-btn').addEventListener('click', () => {
-            if (!currentUserEmail) return showNotification('無法刪除帳號，因为目前没有登入的使用者。', true);
+            if (!currentUserEmail) return showNotification('無法刪除帳號，因為目前没有登入的使用者。', true);
             const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
             const updatedUsers = users.filter(user => user.email !== currentUserEmail);
             localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
