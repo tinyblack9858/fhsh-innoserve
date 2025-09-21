@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教師網路監控系统</title>
+    <title>教師網路監控系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,7 @@
         <!-- 登入页面 -->
         <div id="login-page" class="page active w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
-                <h1 class="text-2xl font-bold mb-2">教師網路監控系统</h1>
+                <h1 class="text-2xl font-bold mb-2">教師網路監控系統</h1>
                 <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">登入</h2>
                 <div class="space-y-4">
                     <input id="login-email" type="email" placeholder="Email / 電子郵件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
@@ -62,12 +62,12 @@
         <!-- 注册页面 -->
         <div id="signup-page" class="page w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
-                <h1 class="text-2xl font-bold mb-2">教師網路監控系统</h1>
+                <h1 class="text-2xl font-bold mb-2">教師網路監控系統</h1>
                 <h2 class="text-xl font-semibold mb-6 text-gray-600 dark:text-gray-400">註冊</h2>
                 <div class="space-y-4">
                     <input id="signup-email" type="email" placeholder="Email / 電子郵件" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                     <input id="signup-password" type="password" placeholder="密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
-                    <input id="signup-confirm-password" type="password" placeholder="再次输入密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                    <input id="signup-confirm-password" type="password" placeholder="再次輸入密碼" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                 </div>
                 <button onclick="handleSignup()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">確認</button>
                 <a href="#" onclick="showPage('login-page')" class="block mt-4 text-sm text-gray-500 hover:underline">已經有帳號了？返回登入</a>
@@ -77,7 +77,7 @@
         <div id="select-count-page" class="page w-full max-w-sm flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg text-center">
                 <h2 class="text-2xl font-bold mb-6">設定監控數量</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">請输入您想要監控的電腦總數。</p>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">請輸入您想要監控的電腦總數。</p>
                 <input type="number" id="computer-count-input" min="1" placeholder="例如：8" class="w-full text-center text-lg px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
                 <button onclick="showIpInputPage()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
             </div>
@@ -86,7 +86,7 @@
         <div id="ip-input-page" class="page w-full max-w-lg flex-col">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full">
                 <h2 class="text-2xl font-bold mb-6 text-center">設定電腦IP位址</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">請為每一台電腦输入對應的IP位址。</p>
+                <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">請為每一台電腦輸入對應的IP位址。</p>
                 <div id="ip-inputs-container" class="space-y-4 max-h-96 overflow-y-auto pr-4"></div>
                 <button onclick="setupDashboard()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
             </div>
@@ -149,7 +149,7 @@
                                 <div class="flex items-center space-x-6"><div id="settings-avatar-display" class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center ring-4 ring-gray-300 dark:ring-gray-600 overflow-hidden"><i class="fas fa-user text-4xl text-gray-500"></i></div><label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition"><input type="file" id="avatar-upload-input" class="hidden" accept="image/*"><i class="fas fa-upload mr-2"></i>上傳圖片</label></div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-username" class="font-semibold">帳號名稱:</label><input type="text" id="settings-username" value="使用者名稱" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-new-password" class="font-semibold">新密碼:</label><input type="password" id="settings-new-password" placeholder="輸入新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-confirm-password" class="font-semibold">確認密碼:</label><input type="password" id="settings-confirm-password" placeholder="确認新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4"><label for="settings-confirm-password" class="font-semibold">確認密碼:</label><input type="password" id="settings-confirm-password" placeholder="確認新密碼" class="md:col-span-2 w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>
                                 <hr class="dark:border-gray-600">
                                 <div class="flex justify-between items-center flex-wrap gap-4">
                                     <button id="delete-account-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition">刪除帳號</button>
@@ -214,7 +214,7 @@
         function handleLogin() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value.trim();
-            if (!email || !password) return showNotification('請输入電子郵件和密碼！', true);
+            if (!email || !password) return showNotification('請輸入電子郵件和密碼！', true);
             const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
             const foundUser = users.find(user => user.email === email && user.password === password);
             if (foundUser) {
@@ -229,7 +229,7 @@
         }
         function showIpInputPage() {
             const count = parseInt(document.getElementById('computer-count-input').value, 10);
-            if (isNaN(count) || count < 1) return showNotification('請输入有效的電腦數量！', true);
+            if (isNaN(count) || count < 1) return showNotification('請輸入有效的電腦數量！', true);
             const ipInputsContainer = document.getElementById('ip-inputs-container');
             ipInputsContainer.innerHTML = '';
             for (let i = 1; i <= count; i++) {
@@ -251,7 +251,7 @@
                 }
                 ipAddresses.push(ip);
             }
-            if (!allIpsValid) return showNotification('請為所有電腦输入有效的IP位址格式！', true);
+            if (!allIpsValid) return showNotification('請為所有電腦輸入有效的IP位址格式！', true);
             showPage('loading-page');
             setTimeout(() => {
                 generateComputerGrid(count, ipAddresses);
@@ -362,7 +362,7 @@
             } else { showNotification('找不到使用者資料，無法儲存！', true); }
         });
         document.getElementById('delete-account-btn').addEventListener('click', () => {
-            if (!currentUserEmail) return showNotification('無法刪除帳號，因為目前没有登入的使用者。', true);
+            if (!currentUserEmail) return showNotification('無法刪除帳號，因為目前沒有登入的使用者。', true);
             const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
             const updatedUsers = users.filter(user => user.email !== currentUserEmail);
             localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
@@ -381,8 +381,8 @@
                 reader.readAsDataURL(file);
             }
         });
-        document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名单已储存！'));
-        document.getElementById('save-redirect-btn').addEventListener('click', () => showNotification('警示頁面URL已储存！'));
+        document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名单已儲存！'));
+        document.getElementById('save-redirect-btn').addEventListener('click', () => showNotification('警示頁面URL已儲存！'));
         
         // 监控与锁定逻辑
         function initializeMonitoringControls() {
