@@ -1,3 +1,5 @@
+// src/main.js (最终修正版 - 固定 Python 路径)
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -6,16 +8,20 @@ let pythonProcess = null;
 const isDev = !app.isPackaged;
 
 function getBackendPath() {
+    // 在开发模式下...
     if (isDev) {
-        return 'python'; // 在开发模式下，直接使用系统环境的 python
+        // 【关键修正】
+        // 直接返回你 pyenv 环境中 Python.exe 的绝对路径。
+        // 这将强制应用程式使用这个你已经确认安装了 scapy 的 Python 版本。
+        // 注意：路径中的反斜杠 \ 必须用 \\ 来转义。
+        return 'C:\\Users\\User\\.pyenv\\pyenv-win\\versions\\3.11.9\\python.exe';
     }
     
-    // 根据平台决定执行档名称，增强跨平台相容性
+    // 在生产模式（打包后），逻辑保持不变，它会使用打包进来的 backend_controller.exe
     let exeName = 'backend_controller';
     if (process.platform === 'win32') {
         exeName += '.exe';
     }
-    
     return path.join(process.resourcesPath, 'python_dist', exeName);
 }
 
@@ -28,7 +34,7 @@ function createWindow() {
     }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  // if (isDev) { mainWindow.webContents.openDevTools(); } // 开发时可取消注解此行来除错
+  // if (isDev) { mainWindow.webContents.openDevTools({ mode: 'detach' }); } // 开发时可取消注解此行来除错
 }
 
 app.whenReady().then(createWindow);
@@ -68,32 +74,20 @@ ipcMain.on('start-monitoring', (event, config) => {
   // 监听子进程的关闭事件
   pythonProcess.on('close', (code) => {
     sendToUI({ type: 'log', level: 'info', message: `Backend process exited with code ${code}.` });
-    // 只有在进程真正关闭后才将全局变量设为 null
     pythonProcess = null;
   });
 });
 
-// 【已修正】监听来自前端的「停止监控」指令，采用正确的异步处理逻辑
+// 监听来自前端的「停止监控」指令，采用正确的异步处理逻辑
 ipcMain.on('stop-monitoring', () => {
   if (pythonProcess) {
-    // 立即将全局进程引用保存到局部变数中，以供后续异步操作使用
     const processToKill = pythonProcess;
-
-    // 将全局引用设为 null，这可以立即阻止新的监控任务重复启动
-    // 注意：此时 processToKill 仍然指向旧的进程物件
     pythonProcess = null;
-
-    // 1. 发送礼貌的终止信号
     processToKill.kill('SIGINT');
-    
-    // 2. 设定一个计时器作为保险，防止进程卡死
     const forceKillTimer = setTimeout(() => {
         console.warn('Python process did not exit gracefully, forcing kill with SIGKILL.');
-        // 即使 pythonProcess 已经是 null，processToKill 依然有效
         processToKill.kill('SIGKILL');
-    }, 3000); // 3秒超时
-
-    // 3. 监听进程的 'close' 事件，一旦进程成功关闭，就清除强制终止的计时器
+    }, 3000);
     processToKill.once('close', () => {
       clearTimeout(forceKillTimer);
     });
