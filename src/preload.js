@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   startMonitoring: (config) => ipcRenderer.send('start-monitoring', config),
   // 暴露「停止監控」功能
   stopMonitoring: () => ipcRenderer.send('stop-monitoring'),
+  // 掃描目前網段可達的裝置
+  scanNetwork: () => ipcRenderer.invoke('scan-network'),
   // 暴露一個監聽器，讓前端可以接收來自後端的事件
   onPythonEvent: (callback) => ipcRenderer.on('python-event', (event, data) => callback(data))
 });
