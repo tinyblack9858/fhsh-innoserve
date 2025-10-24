@@ -230,6 +230,48 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
+ipcMain.handle('scan-network', async () => {
+  const scannerScript = path.resolve(__dirname, '../python/network_scanner.py');
+  if (!fs.existsSync(scannerScript)) {
+    return { success: false, error: '找不到掃描腳本。' };
+  }
+
+  const pythonExecutable = resolvePythonExecutable();
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(pythonExecutable, [scannerScript]);
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('error', (error) => {
+      reject({ success: false, error: error.message });
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        const message = stdout.trim() || stderr.trim() || `掃描腳本異常退出 (code=${code})`;
+        resolve({ success: false, error: message });
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(stdout.trim());
+        resolve(parsed);
+      } catch (parseError) {
+        resolve({ success: false, error: `解析掃描結果失敗: ${parseError.message}` });
+      }
+    });
+  }).catch((error) => ({ success: false, error: error.error || error.message }));
+});
+
 // 监听来自前端的「开始监控」指令
 ipcMain.on('start-monitoring', (event, config) => {
   if (pythonProcess) return; // 如果已经在运行，则不重复启动
@@ -294,5 +336,6 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
 
 */
