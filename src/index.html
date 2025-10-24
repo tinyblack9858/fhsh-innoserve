@@ -79,6 +79,11 @@
                 <h2 class="text-2xl font-bold mb-6">設定監控數量</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4">請輸入您想要監控的電腦總數。</p>
                 <input type="number" id="computer-count-input" min="1" placeholder="例如：8" class="w-full text-center text-lg px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition">
+                <div id="network-scan-section" class="mt-6 space-y-3">
+                    <button id="scan-network-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition"><i class="fas fa-satellite-dish mr-2"></i>掃描網域 IP</button>
+                    <p id="scan-status-text" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                    <div id="network-scan-results" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
                 <button onclick="showIpInputPage()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
             </div>
         </div>
@@ -88,6 +93,10 @@
                 <h2 class="text-2xl font-bold mb-6 text-center">設定電腦IP位址</h2>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">請為每一台電腦輸入對應的IP位址。</p>
                 <div id="ip-inputs-container" class="space-y-4 max-h-96 overflow-y-auto pr-4"></div>
+                <div id="network-scan-ip-section" class="mt-6 space-y-3 hidden">
+                    <p id="scan-status-text-ip" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                    <div id="network-scan-results-ip" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
                 <button onclick="setupDashboard()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
             </div>
         </div>
@@ -102,23 +111,21 @@
         <!-- 主监控容器 -->
         <div id="monitor-container" class="page w-full h-full flex-col">
             <div class="w-full h-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex overflow-hidden">
-                <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col relative">
-                    <div>
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden"><i class="fas fa-user text-2xl text-gray-500"></i></div>
-                            <div><p id="sidebar-username" class="font-bold">使用者名稱</p></div>
-                        </div>
-                        <nav id="main-menu" class="space-y-2">
-                            <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300"><i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span></a>
-                            <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span></a>
-                            <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span></a>
-                            <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span></a>
-                        </nav>
+                <aside class="w-1/5 bg-gray-50 dark:bg-gray-800/50 p-6 flex flex-col">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div id="sidebar-avatar-display" class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden"><i class="fas fa-user text-2xl text-gray-500"></i></div>
+                        <div><p id="sidebar-username" class="font-bold">使用者名稱</p></div>
                     </div>
-                    <div class="absolute bottom-6 inset-x-6"><a href="#" onclick="logout()" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3 font-semibold">登出</span></a></div>
+                    <nav id="main-menu" class="space-y-2 flex-1">
+                        <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300"><i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span></a>
+                        <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span></a>
+                        <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span></a>
+                        <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span></a>
+                    </nav>
+                    <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700"><a href="#" onclick="logout()" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3 font-semibold">登出</span></a></div>
                 </aside>
                 <main id="main-content-area" class="flex-1 overflow-y-auto flex flex-col min-h-0">
-                    <div id="monitor-content" class="main-content active flex-col p-8">
+                    <div id="monitor-content" class="main-content active flex-1 flex-col p-8">
                         <h2 class="text-3xl font-bold mb-6">監控儀表板</h2>
                         <div id="computer-grid" class="flex-1 responsive-grid pb-4"></div>
                         <div class="flex justify-end items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -128,12 +135,12 @@
                             <button id="select-all-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition">全選</button>
                         </div>
                     </div>
-                    <div id="whitelist-content" class="main-content flex-col items-center p-8">
+                    <div id="whitelist-content" class="main-content flex-1 flex-col items-center p-8">
                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">白名單設定</h2>
                         <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg"><textarea id="whitelist-textarea" placeholder="請輸入可存取的URL...&#10;每行一個。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea></div>
                         <div class="w-full max-w-3xl text-right mt-6"><button id="save-whitelist-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button></div>
                     </div>
-                    <div id="redirect-content" class="main-content flex-col items-center p-8">
+                    <div id="redirect-content" class="main-content flex-1 flex-col items-center p-8">
                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">警示頁面設定</h2>
                         <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
                             <label for="redirect-url" class="block font-semibold mb-2 text-gray-700 dark:text-gray-300">指定重新導向URL:</label>
@@ -142,7 +149,7 @@
                         </div>
                         <div class="w-full max-w-3xl text-right mt-6"><button id="save-redirect-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button></div>
                     </div>
-                    <div id="settings-content" class="main-content flex-col items-center justify-center p-8">
+                    <div id="settings-content" class="main-content flex-1 flex-col items-center justify-center p-8">
                         <div class="w-full max-w-2xl">
                             <h2 class="text-3xl font-bold mb-8">帳號設定</h2>
                             <div class="space-y-8">
@@ -167,6 +174,9 @@
     <script>
         const appContainer = document.getElementById('app-container');
         let currentUserEmail = null;
+        let scannedDevices = [];
+        let lastScanMeta = null;
+        let isNetworkScanning = false;
 
         // 你原有的 UI 切换函式，保持不变
         function showPage(pageId) { /* ... */ }
@@ -236,6 +246,141 @@
                 ipInputsContainer.innerHTML += `<div class="flex items-center gap-4"><label for="ip-input-${i}" class="font-semibold text-gray-700 dark:text-gray-300 w-24 text-right">電腦 ${i}:</label><input type="text" id="ip-input-${i}" placeholder="例如：192.168.1.10${i - 1}" class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-indigo-500 rounded-lg outline-none transition"></div>`;
             }
             showPage('ip-input-page');
+            updateIpScanSection();
+        }
+
+        function resetNetworkScanUI() {
+            const statusEl = document.getElementById('scan-status-text');
+            const resultsEl = document.getElementById('network-scan-results');
+            const statusIpEl = document.getElementById('scan-status-text-ip');
+            const resultsIpEl = document.getElementById('network-scan-results-ip');
+            scannedDevices = [];
+            lastScanMeta = null;
+            if (statusEl) statusEl.textContent = '';
+            if (resultsEl) resultsEl.innerHTML = '';
+            if (statusIpEl) statusIpEl.textContent = '';
+            if (resultsIpEl) resultsIpEl.innerHTML = '';
+            updateIpScanSection();
+        }
+
+        function renderScanResults(devices, meta) {
+            const renderFor = (resultsId, statusId, withFillButton) => {
+                const resultsEl = document.getElementById(resultsId);
+                const statusEl = document.getElementById(statusId);
+                if (!resultsEl || !statusEl) return;
+
+                if (!devices.length) {
+                    resultsEl.innerHTML = '<div class="p-3 bg-yellow-100 text-yellow-800 rounded-lg">未找到任何裝置。</div>';
+                    statusEl.textContent = '掃描完成，但未偵測到裝置。';
+                    return;
+                }
+
+                statusEl.textContent = `掃描完成：介面 ${meta?.interface || '-'}，網段 ${meta?.network || '-'}`;
+                resultsEl.innerHTML = devices.map(device => {
+                    const info = `
+                        <div>
+                            <p class="font-semibold">IP：${device.ip}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">MAC：${device.mac}</p>
+                        </div>`;
+                    if (!withFillButton) {
+                        return `<div class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3">${info}</div>`;
+                    }
+                    return `
+                        <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3">
+                            ${info}
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-3 rounded-md transition" data-scan-ip="${device.ip}">填入</button>
+                        </div>`;
+                }).join('');
+            };
+
+            renderFor('network-scan-results', 'scan-status-text', false);
+            renderFor('network-scan-results-ip', 'scan-status-text-ip', true);
+            updateIpScanSection();
+        }
+
+        function updateIpScanSection() {
+            const ipSection = document.getElementById('network-scan-ip-section');
+            if (!ipSection) return;
+            if (scannedDevices.length) {
+                ipSection.classList.remove('hidden');
+            } else {
+                ipSection.classList.add('hidden');
+            }
+        }
+
+        function assignIpFromScan(ip) {
+            const inputs = [...document.querySelectorAll('#ip-inputs-container input')];
+            if (!inputs.length) {
+                showNotification('請先設定要監控的電腦數量。', true);
+                return;
+            }
+
+            if (inputs.some(input => input.value.trim() === ip)) {
+                showNotification(`IP ${ip} 已在列表中。`, true);
+                return;
+            }
+
+            const emptyInput = inputs.find(input => !input.value.trim());
+            if (!emptyInput) {
+                showNotification('所有欄位皆已填滿，如需替換請手動編輯。', true);
+                return;
+            }
+
+            emptyInput.value = ip;
+            emptyInput.classList.remove('border-red-500');
+            showNotification(`已填入 IP：${ip}`);
+        }
+
+        async function handleNetworkScan() {
+            if (!window.electronAPI?.scanNetwork) {
+                showNotification('目前版本不支援自動掃描功能。', true);
+                return;
+            }
+
+            if (isNetworkScanning) return;
+            isNetworkScanning = true;
+
+            const scanBtn = document.getElementById('scan-network-btn');
+            const statusEl = document.getElementById('scan-status-text');
+            const resultsEl = document.getElementById('network-scan-results');
+            const statusIpEl = document.getElementById('scan-status-text-ip');
+            const resultsIpEl = document.getElementById('network-scan-results-ip');
+
+            if (statusEl) statusEl.textContent = '正在掃描網路，請稍候...';
+            if (resultsEl) resultsEl.innerHTML = '';
+            if (statusIpEl) statusIpEl.textContent = '正在掃描網路，請稍候...';
+            if (resultsIpEl) resultsIpEl.innerHTML = '';
+            updateIpScanSection();
+
+            const originalLabel = scanBtn?.innerHTML;
+            if (scanBtn) {
+                scanBtn.disabled = true;
+                scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>掃描中...';
+            }
+
+            try {
+                const response = await window.electronAPI.scanNetwork();
+                if (!response || !response.success) {
+                    const message = response?.error || '未知錯誤。';
+                    throw new Error(message);
+                }
+
+                scannedDevices = response.devices || [];
+                lastScanMeta = { interface: response.interface, network: response.network };
+                renderScanResults(scannedDevices, lastScanMeta);
+                showNotification('網域掃描完成。');
+            } catch (error) {
+                const msg = error instanceof Error ? error.message : '掃描失敗。';
+                if (statusEl) statusEl.textContent = `掃描失敗：${msg}`;
+                if (statusIpEl) statusIpEl.textContent = `掃描失敗：${msg}`;
+                showNotification(`掃描失敗：${msg}`, true);
+            } finally {
+                if (scanBtn) {
+                    scanBtn.disabled = false;
+                    scanBtn.innerHTML = originalLabel || '<i class="fas fa-satellite-dish mr-2"></i>掃描網域 IP';
+                }
+                isNetworkScanning = false;
+            }
         }
         function setupDashboard() {
             const count = parseInt(document.getElementById('computer-count-input').value, 10);
@@ -298,6 +443,7 @@
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('computer-count-input').value = '';
+            resetNetworkScanUI();
             showPage('login-page');
         }
 
@@ -381,9 +527,31 @@
                 reader.readAsDataURL(file);
             }
         });
-        document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名单已儲存！'));
+        document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名單已儲存！'));
         document.getElementById('save-redirect-btn').addEventListener('click', () => showNotification('警示頁面URL已儲存！'));
-        
+
+        const scanNetworkBtn = document.getElementById('scan-network-btn');
+        if (scanNetworkBtn) {
+            scanNetworkBtn.addEventListener('click', handleNetworkScan);
+        }
+
+        const scanResultsEl = document.getElementById('network-scan-results');
+        const scanResultsIpEl = document.getElementById('network-scan-results-ip');
+        const attachScanResultHandler = (element) => {
+            if (!element) return;
+            element.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target instanceof HTMLElement) {
+                    const ip = target.dataset.scanIp;
+                    if (ip) {
+                        assignIpFromScan(ip);
+                    }
+                }
+            });
+        };
+        attachScanResultHandler(scanResultsEl);
+        attachScanResultHandler(scanResultsIpEl);
+
         // 监控与锁定逻辑
         function initializeMonitoringControls() {
             const startButton = document.getElementById('start-monitoring-btn');
@@ -490,6 +658,7 @@
             }
         });
 
+        updateIpScanSection();
         // 初始化
         showPage('login-page');
     </script>
