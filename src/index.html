@@ -119,7 +119,6 @@
                     <nav id="main-menu" class="space-y-2 flex-1">
                         <a href="#" data-content="monitor-content" class="menu-item active-menu-item flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300"><i class="fas fa-desktop w-6 text-center"></i><span class="ml-3 font-semibold">監控</span></a>
                         <a href="#" data-content="whitelist-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-list-check w-6 text-center"></i><span class="ml-3 font-semibold">白名單</span></a>
-                        <a href="#" data-content="redirect-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-exclamation-triangle w-6 text-center"></i><span class="ml-3 font-semibold">警示頁面</span></a>
                         <a href="#" data-content="settings-content" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-cog w-6 text-center"></i><span class="ml-3 font-semibold">設定</span></a>
                     </nav>
                     <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700"><a href="#" onclick="logout()" class="menu-item flex items-center p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-sign-out-alt w-6 text-center"></i><span class="ml-3 font-semibold">登出</span></a></div>
@@ -139,15 +138,6 @@
                         <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">白名單設定</h2>
                         <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg"><textarea id="whitelist-textarea" placeholder="請輸入可存取的URL...&#10;每行一個。" class="w-full h-64 p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition resize-none"></textarea></div>
                         <div class="w-full max-w-3xl text-right mt-6"><button id="save-whitelist-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button></div>
-                    </div>
-                    <div id="redirect-content" class="main-content flex-1 flex-col items-center p-8">
-                        <h2 class="text-3xl font-bold mb-6 w-full max-w-3xl">警示頁面設定</h2>
-                        <div class="w-full max-w-3xl bg-gray-100 dark:bg-gray-900/50 p-6 rounded-lg">
-                            <label for="redirect-url" class="block font-semibold mb-2 text-gray-700 dark:text-gray-300">指定重新導向URL:</label>
-                            <input type="url" id="redirect-url" placeholder="例如：http://example.com/warning" class="w-full p-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-500 rounded-lg outline-none transition">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">當學生訪問未授權的 HTTP 網站时，將被導向至此URL。</p>
-                        </div>
-                        <div class="w-full max-w-3xl text-right mt-6"><button id="save-redirect-btn" class="bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-6 rounded-lg transition">儲存</button></div>
                     </div>
                     <div id="settings-content" class="main-content flex-1 flex-col items-center justify-center p-8">
                         <div class="w-full max-w-2xl">
@@ -528,7 +518,6 @@
             }
         });
         document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名單已儲存！'));
-        document.getElementById('save-redirect-btn').addEventListener('click', () => showNotification('警示頁面URL已儲存！'));
 
         const scanNetworkBtn = document.getElementById('scan-network-btn');
         if (scanNetworkBtn) {
@@ -579,8 +568,7 @@
                 // 确保与后端通讯的 config 物件是正确的
                 const config = {
                     target_ips: selectedComputers,
-                    whitelist: document.getElementById('whitelist-textarea').value.split('\n').filter(Boolean),
-                    redirect_url: document.getElementById('redirect-url').value
+                    whitelist: document.getElementById('whitelist-textarea').value.split('\n').filter(Boolean)
                 };
                 window.electronAPI?.startMonitoring(config);
 
@@ -590,8 +578,8 @@
                 stopButton.classList.remove('hidden');
                 toggleLockBtn.disabled = true;
                 document.querySelectorAll('#computer-grid > div[data-selected="true"]').forEach(box => {
-                   box.classList.remove('ring-green-400', 'dark:ring-green-500');
-                   box.classList.add('ring-yellow-400', 'dark:ring-yellow-500', 'animate-pulse-yellow');
+                box.classList.remove('ring-green-400', 'dark:ring-green-500');
+                box.classList.add('ring-yellow-400', 'dark:ring-yellow-500', 'animate-pulse-yellow');
                 });
             };
 
@@ -636,7 +624,7 @@
                 const level = event.level.toLowerCase();
                 const isError = level === 'error' || level === 'critical';
                 if(isError || level === 'warning' || level === 'info') {
-                   showNotification(`[${level.toUpperCase()}] ${event.message}`, isError);
+                showNotification(`[${level.toUpperCase()}] ${event.message}`, isError);
                 }
             } 
             else if (event.type === 'mac_found') {
