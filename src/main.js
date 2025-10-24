@@ -3,11 +3,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 
 let pythonProcess = null;
 const isDev = !app.isPackaged;
-const FALLBACK_DEV_PYTHON = 'C:\\Users\\User\\.pyenv\\pyenv-win\\versions\\3.11.9\\python.exe';
 let cachedPythonPath = null;
 
 function resolvePythonExecutable() {
@@ -15,9 +14,34 @@ function resolvePythonExecutable() {
     return cachedPythonPath;
   }
 
-  const envPython = process.env.PYTHON_EXECUTABLE || process.env.PYTHON_PATH;
-  cachedPythonPath = envPython || FALLBACK_DEV_PYTHON;
-  return cachedPythonPath;
+  const envCandidates = [process.env.PYTHON_EXECUTABLE, process.env.PYTHON_PATH].filter(Boolean);
+  const defaultCandidates = process.platform === 'win32'
+    ? ['python.exe', 'python', 'python3', 'py']
+    : ['python3', 'python'];
+  const candidates = [...envCandidates, ...defaultCandidates];
+
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    if (path.isAbsolute(candidate) && fs.existsSync(candidate)) {
+      cachedPythonPath = candidate;
+      return cachedPythonPath;
+    }
+
+    try {
+      const result = spawnSync(candidate, ['--version'], { stdio: 'ignore' });
+      if (result.status === 0) {
+        cachedPythonPath = candidate;
+        return cachedPythonPath;
+      }
+    } catch {
+      // ignore probing errors and try next candidate
+    }
+  }
+
+  throw new Error('找不到可用的 Python 執行檔，請設定環境變數 PYTHON_EXECUTABLE。');
 }
 
 function getBackendPath() {
@@ -54,7 +78,12 @@ ipcMain.handle('scan-network', async () => {
     return { success: false, error: '找不到掃描腳本。' };
   }
 
-  const pythonExecutable = resolvePythonExecutable();
+  let pythonExecutable;
+  try {
+    pythonExecutable = resolvePythonExecutable();
+  } catch (error) {
+    return { success: false, error: error.message || '找不到 Python 執行檔。' };
+  }
 
   return new Promise((resolve, reject) => {
     const child = spawn(pythonExecutable, [scannerScript]);
@@ -94,7 +123,16 @@ ipcMain.handle('scan-network', async () => {
 ipcMain.on('start-monitoring', (event, config) => {
   if (pythonProcess) return; // 如果已经在运行，则不重复启动
 
-  const backendExe = getBackendPath();
+  let backendExe;
+  try {
+    backendExe = getBackendPath();
+  } catch (error) {
+    const message = error?.message || '無法找到 Python 執行檔。';
+    if (!event.sender.isDestroyed()) {
+      event.sender.send('python-event', { type: 'log', level: 'error', message });
+    }
+    return;
+  }
   const scriptPath = path.resolve(__dirname, '../python/backend_controller.py');
   
   // 根据模式设定传递给子进程的参数
