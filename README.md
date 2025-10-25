@@ -1,5 +1,6 @@
 # fhsh-innoserve
 資服競賽的東東!
+
 這是一個可以以白名單的方式讓學生在考試的時候限制瀏覽哪些網頁的工具， 利用 ARP spoofing 去攔截他們傳出去的封包，再決定要不要傳出去。
 
 ## 完整流程
@@ -48,13 +49,13 @@ Install Npcap in WinPcap API-compatible Mode
 
 `建立專案`
 
-使用指令將專案下載下來。
+1. 使用指令將專案下載下來。
 「git clone https://github.com/tinyblack9858/fhsh-innoserve.git」
 
-使用指令「cd fhsh-innoserve」進入專案資料夾內。
+2. 使用指令「cd fhsh-innoserve」進入專案資料夾內。
 
-輸入「npm install」指令安裝套件。
+3. 輸入「npm install」指令安裝套件。
 
-使用指令「npm start」在本機運行該應用程式。在應用程式裡面按下開始監聽後，至此，ARP spoofing 攻擊已成功。
+4. 使用指令「npm start」在本機運行該應用程式。在應用程式裡面按下開始監聽後，至此，ARP spoofing 攻擊已成功。
 
-可使用指令「npm run dist」生成 .exe 檔案，亦可包裝成 APP。
+5. 可使用指令「npm run dist」生成 .exe 檔案，亦可包裝成 APP。
