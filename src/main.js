@@ -3,45 +3,14 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { spawn, spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 
 let pythonProcess = null;
 const isDev = !app.isPackaged;
-let cachedPythonPath = null;
+const FIXED_PYTHON_PATH = 'C:\\Users\\User\\.pyenv\\pyenv-win\\shims\\python';
 
 function resolvePythonExecutable() {
-  if (cachedPythonPath) {
-    return cachedPythonPath;
-  }
-
-  const envCandidates = [process.env.PYTHON_EXECUTABLE, process.env.PYTHON_PATH].filter(Boolean);
-  const defaultCandidates = process.platform === 'win32'
-    ? ['python.exe', 'python', 'python3', 'py']
-    : ['python3', 'python'];
-  const candidates = [...envCandidates, ...defaultCandidates];
-
-  for (const candidate of candidates) {
-    if (!candidate) {
-      continue;
-    }
-
-    if (path.isAbsolute(candidate) && fs.existsSync(candidate)) {
-      cachedPythonPath = candidate;
-      return cachedPythonPath;
-    }
-
-    try {
-      const result = spawnSync(candidate, ['--version'], { stdio: 'ignore' });
-      if (result.status === 0) {
-        cachedPythonPath = candidate;
-        return cachedPythonPath;
-      }
-    } catch {
-      // ignore probing errors and try next candidate
-    }
-  }
-
-  throw new Error('找不到可用的 Python 執行檔，請設定環境變數 PYTHON_EXECUTABLE。');
+  return FIXED_PYTHON_PATH;
 }
 
 function getBackendPath() {
