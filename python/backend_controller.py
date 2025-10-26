@@ -734,13 +734,6 @@ def resolve_whitelist_entries(whitelist_urls):
     return ipv4_set, ipv6_set
 
 
-def build_bpf_exclusion(hosts, proto_keyword):
-    if not hosts:
-        return ''
-    clauses = [f"{proto_keyword} dst host {ip}" for ip in hosts]
-    return ' and not (' + ' or '.join(clauses) + ')'
-
-
 def forward_frame(packet, forwarder, src_mac, dst_mac):
     if not forwarder:
         return
@@ -838,9 +831,7 @@ def main():
             if force or limiter.should_emit(key):
                 event('packet', meta)
 
-        ipv4_exclusion = build_bpf_exclusion(sorted(whitelist_ipv4), 'ip')
-        ipv6_exclusion = build_bpf_exclusion(sorted(whitelist_ipv6), 'ip6')
-        bpf_filter = f"ether dst {ATTACKER_MAC} and (ip or ip6){ipv4_exclusion}{ipv6_exclusion}"
+        bpf_filter = f"ether dst {ATTACKER_MAC} and (ip or ip6)"
         log('debug', f"Using BPF filter: {bpf_filter}")
 
         spoof_thread = threading.Thread(
@@ -967,4 +958,5 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         stop_event_flag.set()
+
 '''
