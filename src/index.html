@@ -167,6 +167,23 @@
         let scannedDevices = [];
         let lastScanMeta = null;
         let isNetworkScanning = false;
+        const whitelistTextarea = document.getElementById('whitelist-textarea');
+
+        const getWhitelistStorageKey = (email) => `whitelist:${email}`;
+        const loadWhitelistForCurrentUser = () => {
+            if (!currentUserEmail || !whitelistTextarea) return;
+            const stored = localStorage.getItem(getWhitelistStorageKey(currentUserEmail));
+            whitelistTextarea.value = stored ?? '';
+        };
+        const saveWhitelistForCurrentUser = () => {
+            if (!currentUserEmail) {
+                showNotification('請先登入後再儲存白名單！', true);
+                return;
+            }
+            if (!whitelistTextarea) return;
+            localStorage.setItem(getWhitelistStorageKey(currentUserEmail), whitelistTextarea.value);
+            showNotification('白名單已儲存！');
+        };
 
         // 你原有的 UI 切换函式，保持不变
         function showPage(pageId) { /* ... */ }
@@ -222,6 +239,7 @@
                 showNotification('登入成功！');
                 document.getElementById('sidebar-username').textContent = foundUser.username;
                 document.getElementById('settings-username').value = foundUser.username;
+                loadWhitelistForCurrentUser();
                 showPage('select-count-page');
             } else {
                 showNotification('電子郵件或密碼錯誤！', true);
@@ -433,6 +451,9 @@
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('computer-count-input').value = '';
+            if (whitelistTextarea) {
+                whitelistTextarea.value = '';
+            }
             resetNetworkScanUI();
             showPage('login-page');
         }
@@ -502,6 +523,7 @@
             const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
             const updatedUsers = users.filter(user => user.email !== currentUserEmail);
             localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+            localStorage.removeItem(getWhitelistStorageKey(currentUserEmail));
             showNotification('帳號已成功删除！');
             setTimeout(logout, 1500);
         });
@@ -517,7 +539,7 @@
                 reader.readAsDataURL(file);
             }
         });
-        document.getElementById('save-whitelist-btn').addEventListener('click', () => showNotification('白名單已儲存！'));
+        document.getElementById('save-whitelist-btn').addEventListener('click', saveWhitelistForCurrentUser);
 
         const scanNetworkBtn = document.getElementById('scan-network-btn');
         if (scanNetworkBtn) {
@@ -566,9 +588,12 @@
                 if (selectedComputers.length === 0) return showNotification('請先鎖定要監控的電腦！', true);
                 
                 // 确保与后端通讯的 config 物件是正确的
+                const whitelistEntries = whitelistTextarea
+                    ? whitelistTextarea.value.split('\n').map(entry => entry.trim()).filter(Boolean)
+                    : [];
                 const config = {
                     target_ips: selectedComputers,
-                    whitelist: document.getElementById('whitelist-textarea').value.split('\n').filter(Boolean)
+                    whitelist: whitelistEntries
                 };
                 window.electronAPI?.startMonitoring(config);
 
