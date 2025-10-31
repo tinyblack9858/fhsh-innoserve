@@ -84,7 +84,10 @@
                     <p id="scan-status-text" class="text-sm text-gray-600 dark:text-gray-400"></p>
                     <div id="network-scan-results" class="space-y-2 max-h-60 overflow-y-auto"></div>
                 </div>
-                <button onclick="showIpInputPage()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
+                <div class="flex items-center gap-4 mt-6">
+                    <button onclick="goBackToLoginStep()" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-3 px-4 rounded-lg transition"><i class="fas fa-arrow-left mr-2"></i>上一步</button>
+                    <button onclick="showIpInputPage()" class="flex-1 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步<i class="fas fa-arrow-right ml-2"></i></button>
+                </div>
             </div>
         </div>
         <!-- 输入IP位址页面 -->
@@ -97,7 +100,10 @@
                     <p id="scan-status-text-ip" class="text-sm text-gray-600 dark:text-gray-400"></p>
                     <div id="network-scan-results-ip" class="space-y-2 max-h-60 overflow-y-auto"></div>
                 </div>
-                <button onclick="setupDashboard()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步</button>
+                <div class="flex items-center gap-4 mt-6">
+                    <button onclick="goBackToCountSelection()" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-3 px-4 rounded-lg transition"><i class="fas fa-arrow-left mr-2"></i>上一步</button>
+                    <button onclick="setupDashboard()" class="flex-1 bg-gray-800 hover:bg-gray-700 dark:bg-gray-200 dark:hover:bg-gray-300 dark:text-gray-900 text-white font-bold py-3 px-4 rounded-lg transition">下一步<i class="fas fa-arrow-right ml-2"></i></button>
+                </div>
             </div>
         </div>
         <!-- 载入页面 -->
@@ -456,6 +462,14 @@
             }
             resetNetworkScanUI();
             showPage('login-page');
+        }
+
+        function goBackToLoginStep() {
+            logout();
+        }
+
+        function goBackToCountSelection() {
+            showPage('select-count-page');
         }
 
         // 你的其他 UI 事件绑定，保持不变
